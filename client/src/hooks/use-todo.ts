@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Todo, Priority, Subtask, InsertTodo, UpdateTodo } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -11,6 +11,7 @@ export type SortOption = "custom" | "dateAsc" | "dateDesc" | "priorityAsc" | "pr
 export function useTodo() {
   const [activeList, setActiveList] = useState<string>("all");
   const [sortOption, setSortOption] = useState<SortOption>("custom");
+  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const { toast } = useToast();
 
   // Get all todos
@@ -23,74 +24,72 @@ export function useTodo() {
     queryKey: ["/api/todos"],
   });
 
-  // Get todos by list
-  const getTodosByList = useCallback(() => {
-    console.log("Filtering by active list:", activeList);
-    let filteredTodos = [...todos];
+  // Filter and sort todos when dependencies change
+  useEffect(() => {
+    let result = [...todos];
     
+    // Filter by list type
     if (activeList === "high-priority") {
-      console.log("Filtering by high priority");
-      filteredTodos = filteredTodos.filter(todo => todo.priority === "high");
+      result = result.filter(todo => todo.priority === "high");
     } else if (activeList === "today") {
-      console.log("Filtering by today");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
       
-      filteredTodos = filteredTodos.filter(todo => {
+      result = result.filter(todo => {
         if (!todo.dueDate) return false;
         const dueDate = new Date(todo.dueDate);
         return dueDate >= today && dueDate < tomorrow;
       });
     } else if (activeList === "this-week") {
-      console.log("Filtering by this week");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const nextWeek = new Date(today);
       nextWeek.setDate(nextWeek.getDate() + 7);
       
-      filteredTodos = filteredTodos.filter(todo => {
+      result = result.filter(todo => {
         if (!todo.dueDate) return false;
         const dueDate = new Date(todo.dueDate);
         return dueDate >= today && dueDate < nextWeek;
       });
     } else if (activeList !== "all") {
-      console.log("Filtering by list name:", activeList);
-      filteredTodos = filteredTodos.filter(todo => todo.listName === activeList);
+      result = result.filter(todo => todo.listName === activeList);
     }
     
     // Apply sorting
     switch (sortOption) {
       case "dateAsc":
-        filteredTodos.sort((a, b) => {
+        result.sort((a, b) => {
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
           return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
         });
         break;
       case "dateDesc":
-        filteredTodos.sort((a, b) => {
+        result.sort((a, b) => {
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
           return new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime();
         });
         break;
       case "priorityDesc": // High to Low
-        return filteredTodos.sort((a, b) => {
+        result.sort((a, b) => {
           const priorityMap: Record<Priority, number> = { high: 3, medium: 2, low: 1 };
           return priorityMap[b.priority as Priority] - priorityMap[a.priority as Priority];
         });
+        break;
       case "priorityAsc": // Low to High
-        return filteredTodos.sort((a, b) => {
+        result.sort((a, b) => {
           const priorityMap: Record<Priority, number> = { high: 3, medium: 2, low: 1 };
           return priorityMap[a.priority as Priority] - priorityMap[b.priority as Priority];
         });
+        break;
       default: // Custom (use order)
-        filteredTodos.sort((a, b) => a.order - b.order);
+        result.sort((a, b) => a.order - b.order);
     }
     
-    return filteredTodos;
+    setFilteredTodos(result);
   }, [todos, activeList, sortOption]);
 
   // Create todo
@@ -317,8 +316,10 @@ export function useTodo() {
     }
   }, [todos]);
 
-  // Create memoized filtered todos based on activeList and sortOption
-  const filteredTodos = getTodosByList();
+  // Debug active list changes
+  useEffect(() => {
+    console.log("Active list changed to:", activeList);
+  }, [activeList]);
 
   return {
     todos,
