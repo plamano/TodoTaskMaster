@@ -25,11 +25,14 @@ export function useTodo() {
 
   // Get todos by list
   const getTodosByList = useCallback(() => {
+    console.log("Filtering by active list:", activeList);
     let filteredTodos = [...todos];
     
     if (activeList === "high-priority") {
+      console.log("Filtering by high priority");
       filteredTodos = filteredTodos.filter(todo => todo.priority === "high");
     } else if (activeList === "today") {
+      console.log("Filtering by today");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const tomorrow = new Date(today);
@@ -41,6 +44,7 @@ export function useTodo() {
         return dueDate >= today && dueDate < tomorrow;
       });
     } else if (activeList === "this-week") {
+      console.log("Filtering by this week");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const nextWeek = new Date(today);
@@ -52,6 +56,7 @@ export function useTodo() {
         return dueDate >= today && dueDate < nextWeek;
       });
     } else if (activeList !== "all") {
+      console.log("Filtering by list name:", activeList);
       filteredTodos = filteredTodos.filter(todo => todo.listName === activeList);
     }
     
@@ -312,9 +317,12 @@ export function useTodo() {
     }
   }, [todos]);
 
+  // Create memoized filtered todos based on activeList and sortOption
+  const filteredTodos = getTodosByList();
+
   return {
     todos,
-    filteredTodos: getTodosByList(),
+    filteredTodos,
     isLoading,
     isError,
     error,

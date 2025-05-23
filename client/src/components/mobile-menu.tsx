@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useTodo } from "@/hooks/use-todo";
 import {
@@ -47,68 +46,60 @@ const MobileMenu = () => {
         <nav className="mb-4">
           <ul className="space-y-2">
             <li>
-              <Link href="/">
-                <a
-                  className={cn(
-                    "flex items-center space-x-2 p-2 rounded-lg",
-                    activeList === "all"
-                      ? "bg-primary-light text-primary"
-                      : "text-gray-700 hover:bg-gray-100"
-                  )}
-                  onClick={() => handleListClick("all")}
-                >
-                  <ListFilter size={16} />
-                  <span>All Tasks</span>
-                </a>
-              </Link>
+              <div
+                className={cn(
+                  "flex items-center space-x-2 p-2 rounded-lg cursor-pointer",
+                  activeList === "all"
+                    ? "bg-primary-light text-primary"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+                onClick={() => handleListClick("all")}
+              >
+                <ListFilter size={16} />
+                <span>All Tasks</span>
+              </div>
             </li>
             <li>
-              <Link href="/">
-                <a
-                  className={cn(
-                    "flex items-center space-x-2 p-2 rounded-lg",
-                    activeList === "today"
-                      ? "bg-primary-light text-primary"
-                      : "text-gray-700 hover:bg-gray-100"
-                  )}
-                  onClick={() => handleListClick("today")}
-                >
-                  <Calendar size={16} />
-                  <span>Today</span>
-                </a>
-              </Link>
+              <div
+                className={cn(
+                  "flex items-center space-x-2 p-2 rounded-lg cursor-pointer",
+                  activeList === "today"
+                    ? "bg-primary-light text-primary"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+                onClick={() => handleListClick("today")}
+              >
+                <Calendar size={16} />
+                <span>Today</span>
+              </div>
             </li>
             <li>
-              <Link href="/">
-                <a
-                  className={cn(
-                    "flex items-center space-x-2 p-2 rounded-lg",
-                    activeList === "this-week"
-                      ? "bg-primary-light text-primary"
-                      : "text-gray-700 hover:bg-gray-100"
-                  )}
-                  onClick={() => handleListClick("this-week")}
-                >
-                  <CalendarDays size={16} />
-                  <span>This Week</span>
-                </a>
-              </Link>
+              <div
+                className={cn(
+                  "flex items-center space-x-2 p-2 rounded-lg cursor-pointer",
+                  activeList === "this-week"
+                    ? "bg-primary-light text-primary"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+                onClick={() => handleListClick("this-week")}
+              >
+                <CalendarDays size={16} />
+                <span>This Week</span>
+              </div>
             </li>
             <li>
-              <Link href="/">
-                <a
-                  className={cn(
-                    "flex items-center space-x-2 p-2 rounded-lg",
-                    activeList === "high-priority"
-                      ? "bg-primary-light text-primary"
-                      : "text-gray-700 hover:bg-gray-100"
-                  )}
-                  onClick={() => handleListClick("high-priority")}
-                >
-                  <AlertCircle size={16} className="text-priority-high" />
-                  <span>High Priority</span>
-                </a>
-              </Link>
+              <div
+                className={cn(
+                  "flex items-center space-x-2 p-2 rounded-lg cursor-pointer",
+                  activeList === "high-priority"
+                    ? "bg-primary-light text-primary"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+                onClick={() => handleListClick("high-priority")}
+              >
+                <AlertCircle size={16} className="text-priority-high" />
+                <span>High Priority</span>
+              </div>
             </li>
           </ul>
         </nav>
@@ -119,25 +110,23 @@ const MobileMenu = () => {
         <ul className="space-y-1">
           {lists.map((list) => (
             <li key={list.id}>
-              <Link href="/">
-                <a
-                  className={cn(
-                    "flex items-center justify-between p-2 rounded-lg",
-                    activeList === list.name
-                      ? "bg-primary-light text-primary"
-                      : "text-gray-700 hover:bg-gray-100"
-                  )}
-                  onClick={() => handleListClick(list.name)}
-                >
-                  <div className="flex items-center space-x-2">
-                    <ListFilter size={16} className={`text-${list.color}`} />
-                    <span>{list.name}</span>
-                  </div>
-                  <span className="bg-gray-200 rounded-full px-2 py-0.5 text-xs">
-                    {countTodosByList(list.name)}
-                  </span>
-                </a>
-              </Link>
+              <div
+                className={cn(
+                  "flex items-center justify-between p-2 rounded-lg cursor-pointer",
+                  activeList === list.name
+                    ? "bg-primary-light text-primary"
+                    : "text-gray-700 hover:bg-gray-100"
+                )}
+                onClick={() => handleListClick(list.name)}
+              >
+                <div className="flex items-center space-x-2">
+                  <ListFilter size={16} className={`text-${list.color}`} />
+                  <span>{list.name}</span>
+                </div>
+                <span className="bg-gray-200 rounded-full px-2 py-0.5 text-xs">
+                  {countTodosByList(list.name)}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
